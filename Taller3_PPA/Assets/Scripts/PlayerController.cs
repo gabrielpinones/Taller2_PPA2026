@@ -20,7 +20,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-       
+        // MODIFICACIÓN: Envolvemos el cambio de carril dentro de una comprobación de isGrounded
+        // Así, el jugador solo puede usar "A" y "D" si está tocando el suelo.
         if (isGrounded)
         {
             if (Input.GetKeyDown(KeyCode.D))
