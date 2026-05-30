@@ -20,41 +20,38 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // MODIFICACIÓN: Envolvemos el cambio de carril dentro de una comprobación de isGrounded
-        // Así, el jugador solo puede usar "A" y "D" si está tocando el suelo.
         if (isGrounded)
         {
+            // Validamos que exista carril disponible y que NO haya obstáculos en esa dirección
             if (Input.GetKeyDown(KeyCode.D))
             {
-                currentLane++;
-                if (currentLane > 2) currentLane = 2; 
+                if (currentLane < 2 && !HayObstaculoEnDireccion(Vector3.right))
+                {
+                    currentLane++;
+                }
             }
             else if (Input.GetKeyDown(KeyCode.A))
             {
-                currentLane--;
-                if (currentLane < 0) currentLane = 0; 
+                if (currentLane > 0 && !HayObstaculoEnDireccion(Vector3.left))
+                {
+                    currentLane--;
+                }
             }
         }
 
-        // El salto se mantiene igual, ya comprobaba isGrounded
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             Jump();
         }
-        
-        // El disparo con la tecla F se implementará en una fase posterior.
     }
 
     void FixedUpdate()
     {
         Vector3 forwardMove = transform.forward * forwardSpeed * Time.fixedDeltaTime;
 
-        // 4. Calcular la posición objetivo en el eje X (los 3 carriles)
-        // Carril 0: -laneDistance | Carril 1: 0 | Carril 2: +laneDistance
         float targetXPos = (currentLane - 1) * laneDistance;
         Vector3 targetPosition = new Vector3(targetXPos, rb.position.y, rb.position.z + forwardMove.z);
 
-        // Mover el Rigidbody suavemente hacia la nueva posición
         rb.MovePosition(targetPosition);
     }
 
@@ -70,5 +67,23 @@ public class PlayerController : MonoBehaviour
         {
             isGrounded = true;
         }
+    }
+
+
+    private bool HayObstaculoEnDireccion(Vector3 direccion)
+    {
+        // Se eleva el origen del rayo 1 unidad para que no detecte el suelo por error
+        Vector3 origen = transform.position + Vector3.up * 1f;
+        float radioEsfera = 0.4f; // Grosor del jugador simulado
+        
+        // Lanzamos la proyección a una distancia máxima equivalente a laneDistance
+        if (Physics.SphereCast(origen, radioEsfera, direccion, out RaycastHit hit, laneDistance))
+        {
+            if (hit.collider.CompareTag("Obstacle") || hit.collider.CompareTag("Enemy"))
+            {
+                return true; 
+            }
+        }
+        return false;
     }
 }
