@@ -389,7 +389,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3770782072674913963, guid: 5fa7eec0d5c8649068d5380e31ff3568, type: 3}
       propertyPath: forwardSpeed
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3770782072674913963, guid: 5fa7eec0d5c8649068d5380e31ff3568, type: 3}
       propertyPath: laneDistance
