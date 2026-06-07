@@ -15,89 +15,109 @@ public class EntitySpawner : MonoBehaviour
 
     void Start()
     {
-        GenerarEntidadesMandatorias();
+        
+    }
+    public void Generar(bool soloMonedas = false)
+    {
+    GenerarEntidadesMandatorias(soloMonedas);
     }
 
-    private void GenerarEntidadesMandatorias()
+    private void GenerarEntidadesMandatorias(bool soloMonedas)
+{
+    if (spawnPoints.Length < 3) return;
+
+    int cantidadAGenerar = Random.Range(1, 3);
+    List<int> carrilesDisponibles = new List<int> { 0, 1, 2 };
+
+    for (int i = 0; i < cantidadAGenerar; i++)
     {
-        if (spawnPoints.Length < 3) return;
+        int indiceLista = Random.Range(0, carrilesDisponibles.Count);
+        int carrilElegido = carrilesDisponibles[indiceLista];
+        carrilesDisponibles.RemoveAt(indiceLista);
 
-        // 1. Determinar cuántos objetos saldrán en esta plataforma (mínimo 1, máximo 2)
-        int cantidadAGenerar = Random.Range(1, 3); 
+        Transform puntoElegido = spawnPoints[carrilElegido];
+        GameObject prefabElegido = null;
 
-        // 2. Lista de índices de carriles (0 = Izq, 1 = Cen, 2 = Der) para evitar duplicados
-        List<int> carrilesDisponibles = new List<int> { 0, 1, 2 };
-
-        for (int i = 0; i < cantidadAGenerar; i++)
+        if (soloMonedas)
         {
-            // Seleccionar un carril al azar de los que quedan disponibles y removerlo de la lista
-            int indiceLista = Random.Range(0, carrilesDisponibles.Count);
-            int carrilElegido = carrilesDisponibles[indiceLista];
-            carrilesDisponibles.RemoveAt(indiceLista);
-
-            Transform puntoElegido = spawnPoints[carrilElegido];
-            GameObject prefabElegido = null;
-
-            // 3. Determinar la categoría del objeto por probabilidad
+            // Zona segura de inicio: solo monedas (no matan al jugador)
+            if (monedasPrefabs.Length > 0)
+                prefabElegido = monedasPrefabs[Random.Range(0, monedasPrefabs.Length)];
+        }
+        else
+        {
             float categoriaRandom = Random.value;
 
             if (categoriaRandom < 0.5f) // 50% Obstáculos
             {
                 bool spawnVehiculo = (Random.value > 0.5f);
-
                 if (spawnVehiculo && vehiculosPrefabs.Length > 0)
-                {
                     prefabElegido = vehiculosPrefabs[Random.Range(0, vehiculosPrefabs.Length)];
-                }
                 else if (!spawnVehiculo && otrosObstaculosPrefabs.Length > 0)
-                {
                     prefabElegido = otrosObstaculosPrefabs[Random.Range(0, otrosObstaculosPrefabs.Length)];
-                }
                 else if (vehiculosPrefabs.Length > 0)
-                {
                     prefabElegido = vehiculosPrefabs[Random.Range(0, vehiculosPrefabs.Length)];
-                }
                 else if (otrosObstaculosPrefabs.Length > 0)
-                {
                     prefabElegido = otrosObstaculosPrefabs[Random.Range(0, otrosObstaculosPrefabs.Length)];
-                }
             }
             else if (categoriaRandom < 0.75f) // 25% Enemigos
             {
                 if (enemigosPrefabs.Length > 0)
-                {
                     prefabElegido = enemigosPrefabs[Random.Range(0, enemigosPrefabs.Length)];
-                }
             }
             else // 25% Monedas
             {
                 if (monedasPrefabs.Length > 0)
-                {
                     prefabElegido = monedasPrefabs[Random.Range(0, monedasPrefabs.Length)];
+            }
+        }
+
+        if (prefabElegido != null)
+        {
+            Vector3 posicionFinal = puntoElegido.position;
+            Quaternion rotacionFinal = puntoElegido.rotation;
+
+            bool esVehiculo = System.Array.IndexOf(vehiculosPrefabs, prefabElegido) > -1;
+            bool esMoneda   = System.Array.IndexOf(monedasPrefabs, prefabElegido) > -1;
+
+            if (esVehiculo)
+            {
+                float rotY = (Random.value > 0.5f) ? 0f : 180f;
+                if (Random.value < 0.3f)
+                {
+                    bool flipEnX = (Random.value > 0.5f);
+                    rotacionFinal = Quaternion.Euler(flipEnX ? 180f : 0f, rotY, flipEnX ? 0f : 180f);
+                }
+                else
+                {
+                    rotacionFinal = Quaternion.Euler(0f, rotY, 0f);
                 }
             }
-
-            // 4. Instanciación y configuración de transformación
-            if (prefabElegido != null)
+            else if (esMoneda)
             {
-                Vector3 posicionFinal = puntoElegido.position;
-                Quaternion rotacionFinal = puntoElegido.rotation;
+                posicionFinal.y = 1f; // Moneda flotando, recolectable al correr
+            }
 
-                // Aplicar altura y rotación de choque si es un vehículo
-                if (System.Array.IndexOf(vehiculosPrefabs, prefabElegido) > -1)
+            GameObject entidad = Instantiate(prefabElegido, posicionFinal, rotacionFinal);
+            entidad.transform.SetParent(this.transform, true);
+
+            // Apoyar vehículos sobre el suelo según su tamaño real
+            if (esVehiculo)
+            {
+                Renderer[] renders = entidad.GetComponentsInChildren<Renderer>();
+                if (renders.Length > 0)
                 {
-                    posicionFinal.y += 1.5f;
-
-                    float rotX = Random.Range(0, 4) * 90f; 
-                    float rotZ = Random.Range(0, 4) * 90f;
-                    float rotY = Random.Range(0f, 360f);   
-                    
-                    rotacionFinal = Quaternion.Euler(rotX, rotY, rotZ);
+                    Bounds b = renders[0].bounds;
+                    for (int r = 1; r < renders.Length; r++) b.Encapsulate(renders[r].bounds);
+                    float offsetY = puntoElegido.position.y - b.min.y;
+                    entidad.transform.position += Vector3.up * offsetY;
                 }
-
-                GameObject entidad = Instantiate(prefabElegido, posicionFinal, rotacionFinal);
-                entidad.transform.SetParent(this.transform);
             }
         }
     }
 }
+}
+
+        
+    
+        

@@ -11,6 +11,9 @@ public class PlatformManager : MonoBehaviour
 
     private float spawnZ = 0f;        // La posición Z donde aparecerá la siguiente plataforma
     private float safeZone = 25f;     // Distancia de margen antes de borrar la plataforma que quedó atrás
+
+    public int safeStartPlatforms = 2; // primeras N plataformas: solo monedas
+    private int platformsSpawned = 0;
     
 
     private Queue<GameObject> activePlatforms = new Queue<GameObject>();
@@ -37,13 +40,18 @@ public class PlatformManager : MonoBehaviour
     private void SpawnPlatform()
     {
 
-        GameObject go = Instantiate(platformPrefab, new Vector3(0, 0, spawnZ), Quaternion.identity);
-        
-        // Lo añadimos a la cola para llevar el registro
-        activePlatforms.Enqueue(go);
-        
-        // Sumamos la longitud de la plataforma para que la siguiente aparezca justo al borde de esta
-        spawnZ += platformLength; 
+         GameObject go = Instantiate(platformPrefab, new Vector3(0, 0, spawnZ), Quaternion.identity);
+
+        EntitySpawner spawner = go.GetComponentInChildren<EntitySpawner>();
+        if (spawner != null)
+        {
+            bool zonaSegura = (platformsSpawned < safeStartPlatforms);
+            spawner.Generar(zonaSegura); // las primeras solo monedas
+        }
+        platformsSpawned++;
+
+    activePlatforms.Enqueue(go);
+    spawnZ += platformLength;
     }
 
 

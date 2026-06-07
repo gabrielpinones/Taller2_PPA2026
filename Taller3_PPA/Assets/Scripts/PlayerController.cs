@@ -67,6 +67,19 @@ public class PlayerController : MonoBehaviour
         {
             isGrounded = true;
         }
+        else if (collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("Obstacle"))
+        {
+            if (GameManager.Instance != null) GameManager.Instance.GameOver();
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Coin"))
+        {
+            if (GameManager.Instance != null) GameManager.Instance.AddCoin();
+            Destroy(other.gameObject);
+        }
     }
 
 
