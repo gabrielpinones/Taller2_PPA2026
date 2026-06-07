@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro; // Si usas Text clásico, cambia a: using UnityEngine.UI;
+using TMPro; 
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {

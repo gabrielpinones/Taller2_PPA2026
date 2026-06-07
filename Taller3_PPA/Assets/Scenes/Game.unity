@@ -998,8 +998,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67209a1063778970297d769e3fecbd91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coinsText: {fileID: 1923284633}
-  scoreText: {fileID: 305766260}
+  coinsText: {fileID: 305766260}
+  scoreText: {fileID: 1923284633}
   defeatMenu: {fileID: 355004056}
   player: {fileID: 1541392508}
   musicaFondo: {fileID: 900498229}
@@ -1955,7 +1955,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3770782072674913963, guid: 5fa7eec0d5c8649068d5380e31ff3568, type: 3}
       propertyPath: forwardSpeed
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3770782072674913963, guid: 5fa7eec0d5c8649068d5380e31ff3568, type: 3}
       propertyPath: laneDistance
