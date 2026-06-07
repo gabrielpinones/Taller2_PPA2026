@@ -50,8 +50,8 @@ public class PlatformManager : MonoBehaviour
         }
         platformsSpawned++;
 
-    activePlatforms.Enqueue(go);
-    spawnZ += platformLength;
+        activePlatforms.Enqueue(go);
+        spawnZ += platformLength;
     }
 
 
