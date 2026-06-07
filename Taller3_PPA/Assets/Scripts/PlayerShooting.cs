@@ -7,6 +7,9 @@ public class PlayerShooting : MonoBehaviour
     public Transform firePoint;         // Desde dónde sale la bala
     public float fireCooldown = 0.5f;   // Intervalo mínimo entre disparos
 
+    public AudioSource audioSource;
+    public AudioClip disparoClip;
+
     private float nextFireTime = 0f;
 
     void Update()
@@ -28,5 +31,7 @@ public class PlayerShooting : MonoBehaviour
 
         Instantiate(projectilePrefab, origen, rot);
         // TODO audio: sonido de disparo
+        if (audioSource != null && disparoClip != null)
+        audioSource.PlayOneShot(disparoClip);
     }
 }

@@ -148,3 +148,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 25
   lifeTime: 3
+  muerteEnemigoClip: {fileID: 8300000, guid: 42342780b76c8b7508a99b0cfa485754, type: 3}

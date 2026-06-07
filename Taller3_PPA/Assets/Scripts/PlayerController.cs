@@ -13,6 +13,11 @@ public class PlayerController : MonoBehaviour
     private int currentLane = 1;
     private bool isGrounded = true; 
 
+    [Header("Audio")]
+    public AudioSource audioSource; 
+    public AudioClip saltoClip;     
+    public AudioClip monedaClip;    
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -59,6 +64,8 @@ public class PlayerController : MonoBehaviour
     {
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         isGrounded = false;
+         if (audioSource != null && saltoClip != null)
+        audioSource.PlayOneShot(saltoClip);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -78,6 +85,8 @@ public class PlayerController : MonoBehaviour
         if (other.CompareTag("Coin"))
         {
             if (GameManager.Instance != null) GameManager.Instance.AddCoin();
+            if (audioSource != null && monedaClip != null)
+            audioSource.PlayOneShot(monedaClip);
             Destroy(other.gameObject);
         }
     }

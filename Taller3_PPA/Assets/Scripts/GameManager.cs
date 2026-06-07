@@ -19,6 +19,14 @@ public class GameManager : MonoBehaviour
     private bool isGameOver = false;
     private float startZ;
 
+    [Header("Audio")]
+    public AudioSource musicaFondo; 
+    public AudioSource musicaDerrota;
+
+    [Header("Escenas")]
+    public string mainMenuSceneName = "MainMenu";
+    
+    
     void Awake()
     {
         Instance = this;
@@ -52,8 +60,11 @@ public class GameManager : MonoBehaviour
         if (isGameOver) return;
         isGameOver = true;
         if (defeatMenu != null) defeatMenu.SetActive(true);
-        Time.timeScale = 0f; // Congela el juego
-        // Aquí luego conectamos la música de derrota
+
+        if (musicaFondo != null) musicaFondo.Stop();
+        if (musicaDerrota != null) musicaDerrota.Play();
+
+        Time.timeScale = 0f;
     }
 
     public void RestartGame()
@@ -66,5 +77,11 @@ public class GameManager : MonoBehaviour
     {
         if (coinsText != null) coinsText.text = "MONEDAS: " + coins.ToString("00");
         if (scoreText != null) scoreText.text = "PUNTUACIÓN: " + score.ToString("00000000");
+    }
+
+    public void GoToMainMenu()
+    {
+    Time.timeScale = 1f; // Importante: lo dejamos en 0 al morir
+    SceneManager.LoadScene(mainMenuSceneName);
     }
 }

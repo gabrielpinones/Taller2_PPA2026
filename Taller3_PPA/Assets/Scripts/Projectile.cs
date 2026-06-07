@@ -3,12 +3,14 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     [Header("Configuración de la Bala")]
-    public float speed = 25f;     // Rápida: favorece al jugador (zombies van a ~3)
-    public float lifeTime = 3f;   // Se autodestruye si no impacta nada
+    public float speed = 25f;    
+    public float lifeTime = 3f;  
+
+     public AudioClip muerteEnemigoClip;
 
     void Start()
     {
-        Destroy(gameObject, lifeTime); // Limpieza de seguridad
+        Destroy(gameObject, lifeTime); 
     }
 
     void Update()
@@ -19,11 +21,21 @@ public class Projectile : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy") || other.CompareTag("Obstacle"))
+         if (other.CompareTag("Enemy"))
         {
-            // TODO audio: sonido de enemigo al morir
-            Destroy(other.gameObject); // Destruye enemigo u obstáculo
-            Destroy(gameObject);       // La bala se destruye al impactar
+            
+            EnemyController enemigo = other.    GetComponentInParent<EnemyController>();
+            if (enemigo != null)
+            enemigo.Morir();
+            else
+            Destroy(other.gameObject); 
+
+            Destroy(gameObject);
+        }
+    else if (other.CompareTag("Obstacle"))
+        {
+            Destroy(other.gameObject);
+            Destroy(gameObject);
         }
     }
 }
